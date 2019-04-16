@@ -209,7 +209,7 @@ public class TestSubGroups {
             "        test foo -",
             "",
             "SYNOPSIS",
-            "        test foo { bar <sub-command> } [--]",
+            "        test foo { bar <sub-command> }",
             "",
             "        Where command groups contain the following sub-groups and commands:",
             "            bar: help*",
