@@ -1,3 +1,51 @@
+# Migration to Airline 2.7 from Airline 2.6 or earlier
+
+Airline 2.7 has some breaking changes mostly in low level APIs that won't affect most end users.  
+
+## Introduction of `@PositionalArgument`
+
+A new `@PositionalArgument` annotation is introduced along with its corresponding `PositionalArgumentMetadata` which is exposed on `CommandMetadata` via `getPositionalArguments()` e.g.
+
+```java
+@Command(name = "ArgsPositional", description = "ArgsPositional description")
+public class ArgsPositional
+{
+    @PositionalArgument(position = PositionalArgument.FIRST, title = "File")
+    @Required
+    public String file;
+    
+    @PositionalArgument(position = PositionalArgument.SECOND, title = "Mode")
+    public Integer mode;
+    
+    @Arguments
+    public List<String> parameters = new ArrayList<>();
+}
+```
+
+In the above example we have a required first positional argument which takes a string, followed by an optional positional argument that takes an integer.  Finally any further arguments are captured as before by the `@Arguments` annotated field.
+
+This allows for more fine grained control of argument parsing including:
+
+ - Having arguments with different types
+ - Providing per-argument descriptions
+ - Specifying different restrictions for different arguments without the need to use `@Partials`/`@Partial`
+ - Overriding and sealing arguments similar to how this is already supported for `@Option`
+
+Positional arguments, if present, are parsed prior to any existing `@Arguments` declaration.
+
+There are some restrictions on the definitions of positional arguments:
+
+- The `position` values must form an unbroken sequence i.e. can't have gaps in the positions
+- Can't have a `@Required` argument (or `@Arguments`) in a position after an optional positional argument
+
+### Updating `ArgumentsRestriction` implementations for positional arguments
+
+Users who are using various extension points of the library, such as creating custom restrictions will have to update implementations to implement new methods that cover the validation of positional arguments.
+
+### Updating Custom Help Generators for Positional Arguments
+
+If you are writing custom help generators you should now take into account the positional arguments present on the `CommandMetadata` when writing your implementation.
+
 # Migration to Airline 2.2 from Airline 2.1
 
 Airline 2.2 has some minor breaking changes versus Airline 2.1
